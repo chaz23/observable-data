@@ -167,6 +167,15 @@ sutta_hierarchy <- do.call("bind_rows", hierarchy_list) %>%
   left_join(sutta_word_lengths, by = c("sutta" = "discourse")) %>% 
   rename(words = n)
 
+# Discrepancies in names means word lengths haven't come through. 
+sutta_hierarchy <- sutta_hierarchy %>% 
+  mutate(sutta_temp = str_remove_all(sutta, "-.*$")) %>% 
+  left_join(sutta_word_lengths, by = c("sutta_temp" = "discourse")) %>% 
+  mutate(words = case_when(is.na(words) ~ n,
+                           TRUE ~ words),
+         words = replace_na(words, 100)) %>% 
+  filter(sutta != "an4.106")
+
 
 write_json(list(data = sutta_hierarchy),
            path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
