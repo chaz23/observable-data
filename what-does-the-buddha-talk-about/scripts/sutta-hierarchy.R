@@ -165,17 +165,23 @@ hierarchy_list <- list(dn = dn_hierarchy,
 sutta_hierarchy <- do.call("bind_rows", hierarchy_list) %>% 
   mutate(nikaya = str_extract(sutta, "^[a-z][a-z]")) %>% 
   left_join(sutta_word_lengths, by = c("sutta" = "discourse")) %>% 
-  rename(words = n)
+  rename(suttaWordCount = n)
 
 # Discrepancies in names means word lengths haven't come through. 
 sutta_hierarchy <- sutta_hierarchy %>% 
   mutate(sutta_temp = str_remove_all(sutta, "-.*$")) %>% 
   left_join(sutta_word_lengths, by = c("sutta_temp" = "discourse")) %>% 
-  mutate(words = case_when(is.na(words) ~ n,
-                           TRUE ~ words),
-         words = replace_na(words, 100)) %>% 
-  filter(sutta != "an4.106")
+  mutate(suttaWordCount = case_when(is.na(suttaWordCount) ~ n,
+                           TRUE ~ suttaWordCount),
+         suttaWordCount = replace_na(suttaWordCount, 100)) %>% 
+  filter(sutta != "an4.106") %>% 
+  select(-sutta_temp, -n)
+
+# Calculate word counts for chapters.
+sutta_hierarchy <- sutta_hierarchy %>% 
+  group_by(chapter) %>% 
+  mutate(chapterWordCount = sum(suttaWordCount))
 
 
-write_json(list(data = sutta_hierarchy),
-           path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
+# write_json(list(data = sutta_hierarchy),
+           # path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
