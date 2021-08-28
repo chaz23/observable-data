@@ -183,5 +183,5 @@ sutta_hierarchy <- sutta_hierarchy %>%
   mutate(chapterWordCount = sum(suttaWordCount))
 
 
-# write_json(list(data = sutta_hierarchy),
-           # path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
+write_json(list(data = sutta_hierarchy),
+path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
