@@ -177,11 +177,6 @@ sutta_hierarchy <- sutta_hierarchy %>%
   filter(sutta != "an4.106") %>% 
   select(-sutta_temp, -n)
 
-# Calculate word counts for chapters.
-sutta_hierarchy <- sutta_hierarchy %>% 
-  group_by(chapter) %>% 
-  mutate(chapterWordCount = sum(suttaWordCount))
-
 
 write_json(list(data = sutta_hierarchy),
 path = "./what-does-the-buddha-talk-about/data/sutta_hierarchy.json")
